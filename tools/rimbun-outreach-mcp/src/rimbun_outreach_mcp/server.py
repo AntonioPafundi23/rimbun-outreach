@@ -17,7 +17,7 @@ from mcp.server.fastmcp import FastMCP
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_OUTREACH_HOME = Path.home() / "workspace" / "Rimbun" / "outreach"
+DEFAULT_OUTREACH_HOME = PROJECT_ROOT.parents[1]
 OUTREACH_HOME = Path(
     os.environ.get("RIMBUN_OUTREACH_HOME", str(DEFAULT_OUTREACH_HOME))
 ).expanduser()
@@ -369,6 +369,11 @@ def render_template(template_name: str, row: dict[str, str], offer: str) -> str:
     template = template_path.read_text(encoding="utf-8")
     values = {field: row.get(field, "") for field in FIELDNAMES}
     values["offer"] = offer
+    values["sender_name"] = os.environ.get("RIMBUN_SENDER_NAME", "the Rimbun team")
+    values["sender_role"] = os.environ.get(
+        "RIMBUN_SENDER_ROLE",
+        "working with Rimbun",
+    )
     values["first_name"] = (row.get("name", "").split() or ["there"])[0]
     values["today"] = date.today().isoformat()
 

@@ -5,10 +5,10 @@ This folder is the source of truth for Rimbun prospect research and manual outre
 The MCP helper code lives at:
 
 ```text
-/Users/apafundi/workspace/Rimbun/outreach/tools/rimbun-outreach-mcp
+tools/rimbun-outreach-mcp
 ```
 
-It reads and writes `/Users/apafundi/workspace/Rimbun/outreach` by default. Override this with `RIMBUN_OUTREACH_HOME` only if the outreach folder moves.
+It reads and writes this outreach folder by default. Override this with `RIMBUN_OUTREACH_HOME` only if you want the MCP to read/write a different data folder.
 
 This does not scrape LinkedIn or send automated LinkedIn messages. It stores prospects you provide, helps rank them, and drafts messages for manual review.
 
@@ -16,7 +16,7 @@ Optional Hunter.io support can be enabled for email discovery and verification.
 Create a local `.env` file in the MCP folder:
 
 ```bash
-cd /Users/apafundi/workspace/Rimbun/outreach/tools/rimbun-outreach-mcp
+cd tools/rimbun-outreach-mcp
 cp .env.example .env
 ```
 
@@ -24,6 +24,8 @@ Then edit `.env`:
 
 ```text
 HUNTER_API_KEY=your_hunter_key_here
+RIMBUN_SENDER_NAME=your_name_here
+RIMBUN_SENDER_ROLE=working with Rimbun
 ```
 
 `.env` is ignored by git. Do not commit API keys.
@@ -68,13 +70,13 @@ Use this command after installing from the MCP folder:
 {
   "mcpServers": {
     "rimbun-outreach": {
-      "command": "/Users/apafundi/workspace/Rimbun/outreach/tools/rimbun-outreach-mcp/.venv/bin/rimbun-outreach-mcp"
+      "command": "/absolute/path/to/outreach/tools/rimbun-outreach-mcp/.venv/bin/rimbun-outreach-mcp"
     }
   }
 }
 ```
 
-If you move the folder, update the absolute path.
+Each co-founder should update the absolute path for their local checkout.
 
 ## Tools
 

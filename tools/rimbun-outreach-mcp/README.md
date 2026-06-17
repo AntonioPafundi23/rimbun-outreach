@@ -2,19 +2,19 @@
 
 CSV-based MCP server for finding, scoring, and drafting manual prospect outreach for Rimbun.
 
-The source of truth for outreach data is:
+The source of truth for outreach data is the repo root:
 
 ```text
-/Users/apafundi/workspace/Rimbun/outreach
+../../
 ```
 
 The MCP code lives inside the Rimbun outreach folder:
 
 ```text
-/Users/apafundi/workspace/Rimbun/outreach/tools/rimbun-outreach-mcp
+tools/rimbun-outreach-mcp
 ```
 
-It reads and writes `/Users/apafundi/workspace/Rimbun/outreach` by default. Override this with `RIMBUN_OUTREACH_HOME` only if the outreach folder moves.
+It reads and writes the shared outreach folder by default. Override this with `RIMBUN_OUTREACH_HOME` only if you want the MCP to read/write a different data folder.
 
 This does not scrape LinkedIn or send automated LinkedIn messages. It stores prospects you provide, helps rank them, and drafts messages for manual review.
 
@@ -29,16 +29,18 @@ Then edit `.env`:
 
 ```text
 HUNTER_API_KEY=your_hunter_key_here
+RIMBUN_SENDER_NAME=your_name_here
+RIMBUN_SENDER_ROLE=working with Rimbun
 ```
 
 `.env` is ignored by git. Do not commit API keys.
 
 ## Files
 
-- `/Users/apafundi/workspace/Rimbun/outreach/data/prospects.csv` - editable working list of prospects.
-- `/Users/apafundi/workspace/Rimbun/outreach/data/outreach_interactions.csv` - log of actual outreach sent/replies.
-- `/Users/apafundi/workspace/Rimbun/outreach/config/criteria.json` - scoring signals for Rimbun fit.
-- `/Users/apafundi/workspace/Rimbun/outreach/templates/` - message templates.
+- `../../data/prospects.csv` - editable working list of prospects.
+- `../../data/outreach_interactions.csv` - log of actual outreach sent/replies.
+- `../../config/criteria.json` - scoring signals for Rimbun fit.
+- `../../templates/` - message templates.
 - `src/rimbun_outreach_mcp/server.py` - MCP server.
 
 ## Install
@@ -73,13 +75,13 @@ Use this command from the project folder:
 {
   "mcpServers": {
     "rimbun-outreach": {
-      "command": "/Users/apafundi/workspace/Rimbun/outreach/tools/rimbun-outreach-mcp/.venv/bin/rimbun-outreach-mcp"
+      "command": "/absolute/path/to/outreach/tools/rimbun-outreach-mcp/.venv/bin/rimbun-outreach-mcp"
     }
   }
 }
 ```
 
-If you move the folder, update the absolute path.
+Each co-founder should update the absolute path for their local checkout.
 
 ## Tools
 

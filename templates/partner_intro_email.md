@@ -4,7 +4,7 @@ Subject: Payment behavior into explainable product recommendations
 
 Hi {{first_name}},
 
-I'm Antonio, building Rimbun.
+I'm {{sender_name}}, {{sender_role}}.
 
 Rimbun helps banks, wallets, and fintechs turn transaction behavior into explainable, non-credit product recommendations: liquidity buffers, bill-pay automation, insurance prompts, and other retention-oriented actions.
 
@@ -15,4 +15,4 @@ I noticed {{company}} and thought there may be overlap with your work around {{s
 Would you be open to a 20-minute conversation?
 
 Best,
-Antonio
+{{sender_name}}
