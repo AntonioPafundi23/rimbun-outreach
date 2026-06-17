@@ -1,0 +1,5 @@
+Hi {{first_name}}, I came across {{company}} and noticed your work around {{segment}}.
+
+I'm building Rimbun, a transaction intelligence layer for banks and fintechs in Southeast Asia. It turns payment behavior into explainable, non-credit product recommendations like liquidity buffers, bill-pay automation, and protection prompts.
+
+Curious whether this kind of behavioral recommendation layer is something your team is exploring, or if it sits with someone else?

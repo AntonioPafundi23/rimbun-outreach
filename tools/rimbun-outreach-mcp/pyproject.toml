@@ -1,0 +1,14 @@
+[project]
+name = "rimbun-outreach-mcp"
+version = "0.1.0"
+description = "CSV-based MCP server for Rimbun prospect research and outreach drafting."
+requires-python = ">=3.10"
+dependencies = [
+  "mcp>=1.9.0",
+]
+
+[project.scripts]
+rimbun-outreach-mcp = "rimbun_outreach_mcp.server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

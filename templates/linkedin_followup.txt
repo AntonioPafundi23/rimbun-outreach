@@ -1,0 +1,5 @@
+Hi {{first_name}}, quick follow-up on my note about Rimbun and {{company}}.
+
+I thought it might be relevant because {{fit_reason}}
+
+Worth a short chat, or is someone else closer to product/data partnerships?
