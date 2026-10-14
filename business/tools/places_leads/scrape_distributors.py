@@ -164,6 +164,29 @@ def lead_score(name: str, reviews: int, website: str, phone: str) -> int:
     return score
 
 
+def load_existing(path: Path) -> dict[str, dict[str, str | int]]:
+    """Load existing leads keyed by place_id (empty if file missing)."""
+    if not path.exists():
+        return {}
+    by_id: dict[str, dict[str, str | int]] = {}
+    with path.open(newline="", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            place_id = str(row.get("place_id") or "").strip()
+            if not place_id:
+                continue
+            normalized: dict[str, str | int] = {
+                field: row.get(field, "") for field in FIELDNAMES
+            }
+            # Keep numeric fields as ints when possible for scoring display.
+            for int_field in ("reviews", "lead_score"):
+                try:
+                    normalized[int_field] = int(normalized[int_field] or 0)
+                except ValueError:
+                    normalized[int_field] = 0
+            by_id[place_id] = normalized
+    return by_id
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Scrape Places API (New) into business/data/places_leads.csv"
@@ -197,6 +220,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Keep only rows that have both phone and website",
     )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace the CSV instead of merging by place_id (default: merge)",
+    )
     return parser.parse_args()
 
 
@@ -204,17 +232,19 @@ def main() -> int:
     args = parse_args()
     key = api_key()
     queries = args.queries or DEFAULT_QUERIES
-    seen_place_ids: set[str] = set()
-    rows: list[dict[str, str | int]] = []
+
+    existing = {} if args.overwrite else load_existing(args.output)
+    by_id: dict[str, dict[str, str | int]] = dict(existing)
+    added = 0
+    updated = 0
 
     for query in queries:
         print(f"Searching: {query}")
         places = search_text(query, key)
         for place in places:
             place_id = str(place.get("id") or "")
-            if not place_id or place_id in seen_place_ids:
+            if not place_id:
                 continue
-            seen_place_ids.add(place_id)
 
             if place.get("businessStatus") == "CLOSED_PERMANENTLY":
                 continue
@@ -245,9 +275,16 @@ def main() -> int:
                 "has_phone": "yes" if phone else "no",
                 "has_website": "yes" if website else "no",
             }
-            rows.append(row)
-            print(f"  Saved ({score}): {name}")
+            if place_id in by_id:
+                updated += 1
+                action = "Updated"
+            else:
+                added += 1
+                action = "Added"
+            by_id[place_id] = row
+            print(f"  {action} ({score}): {name}")
 
+    rows = list(by_id.values())
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=FIELDNAMES)
@@ -255,7 +292,12 @@ def main() -> int:
         writer.writerows(rows)
 
     with_contact = sum(1 for row in rows if row["phone"] and row["website"])
-    print(f"Done -> {args.output} ({len(rows)} leads, {with_contact} with phone+website)")
+    mode = "overwrite" if args.overwrite else "merge"
+    print(
+        f"Done ({mode}) -> {args.output} "
+        f"({len(rows)} total, +{added} new, {updated} updated, "
+        f"{with_contact} with phone+website)"
+    )
     return 0
 
 

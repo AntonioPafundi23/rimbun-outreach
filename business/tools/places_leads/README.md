@@ -39,6 +39,8 @@ python3 business/tools/places_leads/scrape_distributors.py --query "distributor 
 python3 business/tools/places_leads/scrape_distributors.py --min-reviews 20 --min-score 4
 ```
 
+By default the script **merges** into the existing CSV by `place_id` (adds new, refreshes matches). Use `--overwrite` only if you intentionally want a fresh file.
+
 ## Scoring
 
 Heuristic lead score (keep >= 3 by default):
