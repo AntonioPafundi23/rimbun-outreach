@@ -1,0 +1,53 @@
+{
+  "positive_keywords": [
+    "insurance",
+    "insurer",
+    "asuransi",
+    "life insurance",
+    "general insurance",
+    "microinsurance",
+    "protection",
+    "bancassurance",
+    "indonesia",
+    "philippines",
+    "southeast asia",
+    "sea"
+  ],
+  "negative_keywords": [
+    "broker only",
+    "closed",
+    "student"
+  ],
+  "target_titles": [
+    "founder",
+    "co-founder",
+    "ceo",
+    "chief product",
+    "chief digital",
+    "head of product",
+    "head of digital",
+    "head of partnerships",
+    "head of distribution",
+    "vp product",
+    "director"
+  ],
+  "target_locations": [
+    "southeast asia",
+    "sea",
+    "indonesia",
+    "jakarta",
+    "philippines",
+    "manila",
+    "singapore",
+    "malaysia",
+    "thailand",
+    "vietnam"
+  ],
+  "target_segments": [
+    "insurance",
+    "life insurance",
+    "general insurance",
+    "microinsurance",
+    "bancassurance"
+  ]
+}

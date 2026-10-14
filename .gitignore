@@ -4,7 +4,12 @@
 __pycache__/
 *.py[cod]
 *.egg-info/
+
+# Legacy tool-local env files (prefer outreach/.env)
 tools/rimbun-outreach-mcp/.env
+business/tools/places_leads/.env
+
 tools/rimbun-outreach-mcp/.venv/
 tools/rimbun-outreach-mcp/src/*.egg-info/
 tools/rimbun-outreach-mcp/src/**/__pycache__/
+business/tools/places_leads/.venv/

@@ -17,7 +17,9 @@ from mcp.server.fastmcp import FastMCP
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_OUTREACH_HOME = PROJECT_ROOT.parents[1]
+# Repo root is outreach/; segment folders are banks|business|insurance.
+REPO_ROOT = PROJECT_ROOT.parents[1]
+DEFAULT_OUTREACH_HOME = REPO_ROOT / "banks"
 OUTREACH_HOME = Path(
     os.environ.get("RIMBUN_OUTREACH_HOME", str(DEFAULT_OUTREACH_HOME))
 ).expanduser()
@@ -26,7 +28,8 @@ CONFIG_DIR = OUTREACH_HOME / "config"
 TEMPLATES_DIR = OUTREACH_HOME / "templates"
 PROSPECTS_CSV = DATA_DIR / "prospects.csv"
 CRITERIA_JSON = CONFIG_DIR / "criteria.json"
-LOCAL_ENV_PATH = PROJECT_ROOT / ".env"
+# One shared secrets file at repo root. Tool-local .env is a legacy fallback.
+ENV_CANDIDATES = (REPO_ROOT / ".env", PROJECT_ROOT / ".env")
 HUNTER_API_BASE = "https://api.hunter.io/v2"
 
 DEFAULT_CRITERIA: dict[str, list[str]] = {
@@ -171,19 +174,19 @@ def ensure_files() -> None:
 
 
 def load_local_env() -> None:
-    """Load simple KEY=VALUE lines from the local MCP .env if present."""
-    if not LOCAL_ENV_PATH.exists():
-        return
-
-    for raw_line in LOCAL_ENV_PATH.read_text(encoding="utf-8").splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#") or "=" not in line:
+    """Load KEY=VALUE lines from outreach/.env (then legacy MCP .env)."""
+    for env_path in ENV_CANDIDATES:
+        if not env_path.exists():
             continue
-        key, value = line.split("=", 1)
-        key = key.strip()
-        value = value.strip().strip('"').strip("'")
-        if key and key not in os.environ:
-            os.environ[key] = value
+        for raw_line in env_path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key and key not in os.environ:
+                os.environ[key] = value
 
 
 def hunter_api_key() -> str:
@@ -192,7 +195,7 @@ def hunter_api_key() -> str:
     if not api_key:
         raise ValueError(
             "Hunter API key is not configured. Set HUNTER_API_KEY in the "
-            "environment or in outreach/tools/rimbun-outreach-mcp/.env."
+            "environment or in outreach/.env."
         )
     return api_key
 

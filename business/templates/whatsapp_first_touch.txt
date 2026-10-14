@@ -1,0 +1,5 @@
+Hi, I found {{company}} while looking for distributors in {{location}}.
+
+I'm {{sender_name}} from Rimbun — we help businesses turn payment behavior into clearer next-product recommendations.
+
+Do you have a minute for a short WhatsApp chat this week?

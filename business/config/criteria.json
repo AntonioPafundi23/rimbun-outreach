@@ -1,0 +1,51 @@
+{
+  "positive_keywords": [
+    "distributor",
+    "grosir",
+    "wholesale",
+    "wholesaler",
+    "agen",
+    "agency",
+    "supplier",
+    "trading",
+    "perdagangan",
+    "indonesia",
+    "jakarta",
+    "surabaya",
+    "bandung",
+    "medan",
+    "semarang"
+  ],
+  "negative_keywords": [
+    "retail only",
+    "toko kelontong",
+    "closed",
+    "permanently closed"
+  ],
+  "target_titles": [
+    "owner",
+    "founder",
+    "director",
+    "manager",
+    "sales",
+    "purchasing",
+    "procurement"
+  ],
+  "target_locations": [
+    "indonesia",
+    "jakarta",
+    "surabaya",
+    "bandung",
+    "medan",
+    "semarang",
+    "makassar",
+    "denpasar"
+  ],
+  "target_segments": [
+    "distributor",
+    "grosir",
+    "wholesale",
+    "trading",
+    "supplier"
+  ]
+}

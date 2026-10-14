@@ -1,47 +1,46 @@
 # Rimbun Outreach MCP
 
-CSV-based MCP server for finding, scoring, and drafting manual prospect outreach for Rimbun.
+CSV-based MCP server for scoring and drafting manual prospect outreach for Rimbun.
 
-The source of truth for outreach data is the repo root:
-
-```text
-../../
-```
-
-The MCP code lives inside the Rimbun outreach folder:
+Segment data lives one level up from `tools/`:
 
 ```text
-tools/rimbun-outreach-mcp
+../../banks
+../../business
+../../insurance
 ```
 
-It reads and writes the shared outreach folder by default. Override this with `RIMBUN_OUTREACH_HOME` only if you want the MCP to read/write a different data folder.
+Default home is **banks**. Override with `RIMBUN_OUTREACH_HOME`:
+
+```bash
+export RIMBUN_OUTREACH_HOME=/absolute/path/to/outreach/business
+```
 
 This does not scrape LinkedIn or send automated LinkedIn messages. It stores prospects you provide, helps rank them, and drafts messages for manual review.
 
 Optional Hunter.io support can be enabled for email discovery and verification.
-Create a local `.env` file in this MCP folder:
+Use the **shared** secrets file at the outreach repo root:
 
 ```bash
+cd ../..
 cp .env.example .env
 ```
-
-Then edit `.env`:
 
 ```text
 HUNTER_API_KEY=your_hunter_key_here
 RIMBUN_SENDER_NAME=your_name_here
 RIMBUN_SENDER_ROLE=working with Rimbun
+GOOGLE_PLACES_API_KEY=...   # used by business Places scrape, not MCP
 ```
 
 `.env` is ignored by git. Do not commit API keys.
 
-## Files
+## Files (per segment)
 
-- `../../data/prospects.csv` - editable working list of prospects.
-- `../../data/outreach_interactions.csv` - log of actual outreach sent/replies.
-- `../../config/criteria.json` - scoring signals for Rimbun fit.
-- `../../templates/` - message templates.
-- `src/rimbun_outreach_mcp/server.py` - MCP server.
+- `data/prospects.csv` - editable working list of prospects.
+- `data/outreach_interactions.csv` - log of actual outreach sent/replies.
+- `config/criteria.json` - scoring signals for that segment.
+- `templates/` - message templates.
 
 ## Install
 
@@ -69,13 +68,14 @@ python -m rimbun_outreach_mcp.server
 
 ## MCP Client Config
 
-Use this command from the project folder:
-
 ```json
 {
   "mcpServers": {
     "rimbun-outreach": {
-      "command": "/absolute/path/to/outreach/tools/rimbun-outreach-mcp/.venv/bin/rimbun-outreach-mcp"
+      "command": "/absolute/path/to/outreach/tools/rimbun-outreach-mcp/.venv/bin/rimbun-outreach-mcp",
+      "env": {
+        "RIMBUN_OUTREACH_HOME": "/absolute/path/to/outreach/banks"
+      }
     }
   }
 }

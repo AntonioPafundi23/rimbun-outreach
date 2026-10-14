@@ -1,48 +1,69 @@
 # Rimbun Outreach
 
-This folder is the source of truth for Rimbun prospect research and manual outreach notes.
-
-The MCP helper code lives at:
+Source of truth for Rimbun prospect research and manual outreach notes, split by commercial segment.
 
 ```text
-tools/rimbun-outreach-mcp
+outreach/
+  banks/       # banks, digital banks, e-wallets, fintechs
+  business/    # distributors, grosir, wholesale (Places + WhatsApp)
+  insurance/   # insurers / protection distribution
+  tools/       # shared MCP helper
 ```
 
-It reads and writes this outreach folder by default. Override this with `RIMBUN_OUTREACH_HOME` only if you want the MCP to read/write a different data folder.
+Each segment has the same shape:
 
-This does not scrape LinkedIn or send automated LinkedIn messages. It stores prospects you provide, helps rank them, and drafts messages for manual review.
+```text
+<data|config|templates>/
+  data/prospects.csv
+  data/outreach_interactions.csv
+  config/criteria.json
+  templates/
+```
 
-Optional Hunter.io support can be enabled for email discovery and verification.
-Create a local `.env` file in the MCP folder:
+The MCP helper lives at `tools/rimbun-outreach-mcp`. It reads/writes one segment folder at a time.
+
+Default segment is **banks**. Switch with:
 
 ```bash
-cd tools/rimbun-outreach-mcp
+export RIMBUN_OUTREACH_HOME=/absolute/path/to/outreach/business
+# or insurance
+```
+
+This does not scrape LinkedIn or send automated messages. It stores prospects you provide, helps rank them, and drafts messages for manual review.
+
+## Secrets (one file)
+
+All tools read from a single env file at the repo root:
+
+```bash
 cp .env.example .env
 ```
 
-Then edit `.env`:
+Put Hunter, Google Places, and sender fields there. Do not scatter `.env` files per segment.
 
-```text
-HUNTER_API_KEY=your_hunter_key_here
-RIMBUN_SENDER_NAME=your_name_here
-RIMBUN_SENDER_ROLE=working with Rimbun
-```
+## Banks (default)
 
-`.env` is ignored by git. Do not commit API keys.
+Existing ICP: banks, wallets, fintechs. LinkedIn / email templates. Optional Hunter.io for email discovery.
 
-## Files
+## Business
 
-- `data/prospects.csv` - editable working list of prospects.
-- `data/outreach_interactions.csv` - log of actual outreach sent/replies.
-- `config/criteria.json` - scoring signals for Rimbun fit.
-- `templates/` - message templates.
-- `tools/rimbun-outreach-mcp/src/rimbun_outreach_mcp/server.py` - MCP server.
-
-## Install
-
-From the MCP folder:
+Distributor / grosir lead gen via Google Places:
 
 ```bash
+# after outreach/.env has GOOGLE_PLACES_API_KEY
+python3 business/tools/places_leads/scrape_distributors.py
+```
+
+See `business/tools/places_leads/README.md`. Output lands in `business/data/places_leads.csv`.
+
+## Insurance
+
+Scaffold ready: criteria + empty prospect CSVs + LinkedIn template. Same MCP workflow as banks once you set `RIMBUN_OUTREACH_HOME` to the insurance folder.
+
+## Install MCP
+
+```bash
+cd tools/rimbun-outreach-mcp
 /opt/homebrew/bin/python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
@@ -50,7 +71,7 @@ python -m pip install -e .
 
 The macOS system `python3` may be Python 3.9; this project expects Python 3.10+.
 
-## Run
+## Run MCP
 
 ```bash
 rimbun-outreach-mcp
@@ -62,45 +83,46 @@ Or:
 python -m rimbun_outreach_mcp.server
 ```
 
-## MCP Client Config
-
-Use this command after installing from the MCP folder:
+### MCP client config
 
 ```json
 {
   "mcpServers": {
     "rimbun-outreach": {
-      "command": "/absolute/path/to/outreach/tools/rimbun-outreach-mcp/.venv/bin/rimbun-outreach-mcp"
+      "command": "/absolute/path/to/outreach/tools/rimbun-outreach-mcp/.venv/bin/rimbun-outreach-mcp",
+      "env": {
+        "RIMBUN_OUTREACH_HOME": "/absolute/path/to/outreach/banks"
+      }
     }
   }
 }
 ```
 
-Each co-founder should update the absolute path for their local checkout.
+Change `RIMBUN_OUTREACH_HOME` to `.../business` or `.../insurance` when working that segment.
 
-## Tools
+## MCP tools
 
-- `add_prospect` - add or update a prospect in the CSV.
-- `list_top_prospects` - list prospects sorted by score.
-- `rescore_prospects` - recalculate scores after editing criteria.
-- `draft_message` - create a LinkedIn-style message for manual sending.
-- `update_status` - track manual outreach status.
-- `get_prospect_csv_path` - return the CSV path.
-- `hunter_domain_search` - find public emails for a company domain via Hunter.
-- `hunter_email_finder` - find a likely email for a named person at a domain.
-- `hunter_verify_email` - verify an email address before outreach.
+- `add_prospect` / `list_top_prospects` / `rescore_prospects`
+- `draft_message` / `update_status` / `get_prospect_csv_path`
+- `hunter_domain_search` / `hunter_email_finder` / `hunter_verify_email`
 
-## CSV Columns
+## Prospect CSV columns
 
 ```csv
 company,website,linkedin_profile,name,title,location,segment,source,fit_score,fit_reason,message_draft,status,last_contacted,notes
 ```
 
-## Example Workflow
+## Example workflows
 
-1. Add prospects manually from LinkedIn, company websites, partner lists, or other permitted sources.
-2. Edit `config/criteria.json` to tune what "good fit" means for Rimbun.
-3. Ask your MCP client to list top prospects.
-4. Draft a message.
-5. Review and send manually.
-6. Update the prospect status in the CSV.
+**Banks / insurance**
+
+1. Add prospects manually from LinkedIn, websites, or partner lists.
+2. Tune `config/criteria.json` in that segment.
+3. List top prospects → draft → send manually → update status.
+
+**Business**
+
+1. Run Places scrape for city queries.
+2. Keep rows with phone + website (`--require-phone-website`).
+3. WhatsApp manually using `business/templates/whatsapp_first_touch.txt`.
+4. Log touches in `business/data/outreach_interactions.csv`.
